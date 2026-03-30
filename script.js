@@ -43,7 +43,30 @@ function renderRow(name) {
 
 }
 
-// 4. Delete karne ke liye
+// 4. Roll Number update and Data save in main function
+function updateTotal() {
+    const allRows = document.querySelectorAll("#tableBody tr");
+    const statsSpan = document.getElementById("totalcount");
+
+    if (statsSpan) statsSpan.innerText = allRows.length;
+
+    const attendanceArray = [];
+
+    // Run a loop on each row and set the roll number(1,2,3...)
+    allRows.forEach((row, index) => {
+        const rollCell = row.querySelector(".roll-no");
+        if (rollCell) {
+            rollCell.innerText = index + 1; // It starts from index 0, so...
+        }
+
+        // Add the data to the list so it can be saved
+        attendanceArray.push({ name: row.cells[1].innerHTML });
+    });
+
+    localStorage.setItem("attendanceData", JSON.stringify(attendanceArray));
+}
+
+// 5. Delete karne ke liye
 function deleteRow(btn) {
     if(confirm("Click OK to delete")){
         btn.parentElement.parentElement.remove();
@@ -51,18 +74,18 @@ function deleteRow(btn) {
     }
 }
 
-// 5. Sab saaf karne ke liye
+// 6. Sab saaf karne ke liye
 function clearALL() {
     if(confirm("Click OK to Clear the list?")){
         document.getElementById("tableBody").innerHTML = "";
-        localStorage.removeItem("attendanceList");
+        localStorage.removeItem("attendanceData");
         updateTotal();
     }
 }
 
-// 6. YE HI MAIN FUNCTION: jo count sahi karega aur SAVE karega 
+// 7. YE HI MAIN FUNCTION: jo count sahi karega aur SAVE karega 
 function updateTotal() {
-    const allRows = document.querySelector("#tableBody tr");
+    const allRows = document.querySelectorAll("#tableBody tr");
     const statsSpan = document.getElementById("totalcount");
 
     if (statsSpan) statsSpan.innerText = allRows.length;
@@ -83,13 +106,13 @@ function updateTotal() {
     localStorage.setItem("attendanceList", JSON.stringify(attendanceArray));
 }
 
-// 7. Excel Export Fix
+// 8. Excel Export Fix
 function exportTableTOCSV() {
     let csv = "ROLL No, Name, Date & Time, status\n";
-    const row = document.querySelectorAll("#tableBody tr");
+    const rows = document.querySelectorAll("#tableBody tr");
 
     rows.forEach(row => {
-        const cols = rows.querySelectorAll("td");
+        const cols = row.querySelectorAll("td");
         let rowData = [];
         for (let i = 0; i < cols.length - 1; i++) {
             rowData.push(cols[i].innerText);
@@ -98,8 +121,11 @@ function exportTableTOCSV() {
     })
 
     const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.url.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.setAttribute("href, url");
-    a.setAttribute("download","Attendance_Report.csv");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "Attendance_Report.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }        
