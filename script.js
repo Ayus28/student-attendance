@@ -46,23 +46,23 @@ function renderRow(name) {
 // 4. Roll Number update and Data save in main function
 function updateTotal() {
     const allRows = document.querySelectorAll("#tableBody tr");
-    const statsSpan = document.getElementById("totalcount");
-
-    if (statsSpan) statsSpan.innerText = allRows.length;
-
-    const attendanceArray = [];
-
+   
     // Run a loop on each row and set the roll number(1,2,3...)
     allRows.forEach((row, index) => {
         const rollCell = row.querySelector(".roll-no");
         if (rollCell) {
             rollCell.innerText = index + 1; // It starts from index 0, so...
         }
-
-        // Add the data to the list so it can be saved
-        attendanceArray.push({ name: row.cells[1].innerHTML });
     });
 
+    // The remaining count and storage work is done here
+    const statsSpan = document.getElementById("totalCount");
+    if (statsSpan) statsSpan.innerText = allRows.length;
+
+    const attendanceArray = [];
+    allRows.forEach(row => {
+        attendanceArray.push({ name: row.cells[1].innerText });
+    });
     localStorage.setItem("attendanceData", JSON.stringify(attendanceArray));
 }
 
