@@ -1,6 +1,6 @@
 // 1. Security Check: Redirect to login if not authenticated
 if (!localStorage.getItem("isloggedIn") === "true") {
-    window.location.href = "login.html";
+    window.location.href = "index.html";
 }
 
 // 2. Initialize page and set permissions based on user role
