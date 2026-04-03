@@ -1,131 +1,94 @@
-let count = 1;
+// 1. Security Check: Redirect to login if not authenticated
+if (!localStorage.getItem("isloggedIn") === "true") {
+    window.location.href = "login.html";
+    window.location.href = "./index.html"; 
+}
 
-// 1. Jab page load ho, data wapis lao
-window.onload = function() {
-    let savedData = localStorage.getItem("attendanceData");
-    if (savedData) {
-        const students = JSON.parse(savedData);
-        students.forEach(student => {
-            renderRow(student.name);
-        });
+// 2. Initialize page and set permissions based on user role
+window.onload = () => {
+    const role = localStorage.getItem("role");
+
+    // Hide administrative controls if the user is a students
+    if (role === "student") {
+        const adminControls = document.querySelectorAll(".admin-control");
+        if (adminControls) {
+            adminControls.classList.add("hidden");
+        }
     }
+
+    // Load and display saved attendance data
+    const savedData = JSON.parse(localStorage.getItem("attendanceData")) || [];
+    savedData.forEach(student => renderRow(student.name));
     updateTotal();
 };
 
-// 2. Naya Student Add karne ke liye
-function addAttendance() {
-    const nameInput = document.getElementById("StudentName");
+// 3. Function to add a new student to the list
+function addStudent() {
+    const nameInput = document.getElementById("studentName");
     const name = nameInput.value.trim();
 
     if (name === "") {
-         alert("Please enter a name!");
-         return
+        alert("Please enter a valid name!");
+        return;
     }
 
     renderRow(name);
-    nameInput.value = "";
-    nameInput.focus();
+    updateTotal();
+    nameInput.value = ""; // Clear input field after adding
 }
 
-// 3. Table mein Row banne ke liye
+// 4. Function to create and display a table row
 function renderRow(name) {
     const tableBody = document.getElementById("tableBody");
+    const role = localStorage.getItem("role");
     const row = document.createElement("tr");
 
-     row.innerHTML = `
+    row.innerHTML = `
         <td class="roll-no"></td>
         <td>${name}</td>
-        <td>${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()}</td>
-        <td>present</td>
-        <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+        <td>${new Date().toLocaleTimeString()}</td>
+        <td><span style="color: green; font-weight:bold;">present</span></td>
+        <td class="action-column ${role === "student" ? "hidden" : ""}">
+            <button class="delete-btn" onclick="deleteRow(this)">Delete</button>
+        </td>
     `;
     tableBody.appendChild(row);
-
 }
 
-// 4. Roll Number update and Data save in main function
+// 5. Function to update Roll Numbers, Total Count, and LocalStorage
 function updateTotal() {
     const allRows = document.querySelectorAll("#tableBody tr");
-   
-    // Run a loop on each row and set the roll number(1,2,3...)
-    allRows.forEach((row, index) => {
-        const rollCell = row.querySelector(".roll-no");
-        if (rollCell) {
-            rollCell.innerText = index + 1; // It starts from index 0, so...
-        }
-    });
-
-    // The remaining count and storage work is done here
     const statsSpan = document.getElementById("totalCount");
-    if (statsSpan) statsSpan.innerText = allRows.length;
+
+    if (statsSpan) {
+        statsSpan.innerText = allRows.length;
+    }
 
     const attendanceArray = [];
-    allRows.forEach(row => {
+    allRows.forEach((row, index) => {
+        // Assign sequential roll numbers(1, 2, 3, ...)
+        const rollCell = row.querySelector(".roll-no");
+        if (rollCell) {
+            rollCell.innerText = index + 1;
+        }
+
+        // Push students name to array for storage
         attendanceArray.push({ name: row.cells[1].innerText });
     });
-    localStorage.setItem("attendanceData", JSON.stringify(attendanceArray));
+
+    localStorage.setItem("attendanceList", JSON.stringify(attendanceArray)); 
 }
 
-// 5. Delete karne ke liye
+// 6. Function to delete a specific row
 function deleteRow(btn) {
-    if(confirm("Click OK to delete")){
-        btn.parentElement.parentElement.remove();
-        updateTotal();
+    if(confirm("Are you sure you want to delete this record?")) {
+        btn.closest("tr").remove();
+        updateTotal(); // Re-caliculate roll numbers after deletion
     }
 }
 
-// 6. Sab saaf karne ke liye
-function clearALL() {
-    if(confirm("Click OK to Clear the list?")){
-        document.getElementById("tableBody").innerHTML = "";
-        localStorage.removeItem("attendanceData");
-        updateTotal();
-    }
+// 7. function to clear session and logout
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
 }
-
-// 7. YE HI MAIN FUNCTION: jo count sahi karega aur SAVE karega 
-function updateTotal() {
-    const allRows = document.querySelectorAll("#tableBody tr");
-    const statsSpan = document.getElementById("totalcount");
-
-    if (statsSpan) statsSpan.innerText = allRows.length;
-
-    const attendanceArray = []; 
-
-    allRows.forEach((Row, index) => {
-        const rollCell = Row.querySelector(".roll-no");
-        if (rollCell) rollCell.innerText = index + 1;
-
-        attendanceArray.push({ name: row.cells[1].innerHTML});
-    });
-
-    // Agla number set karne ke liye
-    count = allRows.length + 1;
-
-    // Memory mein save karne ke liye
-    localStorage.setItem("attendanceList", JSON.stringify(attendanceArray));
-}
-
-// 8. Excel Export Fix
-function exportTableTOCSV() {
-    let csv = "ROLL No, Name, Date & Time, status\n";
-    const rows = document.querySelectorAll("#tableBody tr");
-
-    rows.forEach(row => {
-        const cols = row.querySelectorAll("td");
-        let rowData = [];
-        for (let i = 0; i < cols.length - 1; i++) {
-            rowData.push(cols[i].innerText);
-        }
-        csv += rowData.join(",") + "\n";
-    })
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.setAttribute("href", url);
-    a.setAttribute("download", "Attendance_Report.csv");
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}        
