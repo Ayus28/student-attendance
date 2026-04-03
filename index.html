@@ -3,43 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Attendance System</title>
+    <title>Attendance Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h2>Student Attendance pro</h2>
-
-        <div class="input-section">
-            <input type="text" id="StudentName" placeholder="Enter Student Name...">
-            <button class="add-btn" onclick="addAttendance()">Add Student</button>
+        <div class="header-section">
+            <h1>Attendance System</h1>
+            <button onclick="logout()" class="logout-btn">Logout</button>
         </div>
-
-        <div class="action-bar">
-            <input type="text" id="searchInput" onkeyup="searchStudent()" placeholder="Search Student...">
-            <button class="export-btn" onclick="exportTableToCSV('attendance.csv')">Export to Excel</button>
-            <button class="clear-btn" onclick="clearALL()">Clear All</button> 
+        
+        <div id="admitControls" class="input-section">
+            <input type="text" id="studentName" placeholder="Enter Student Name...">
+            <button onclick="addStudent()">Add Student</button>
         </div>
 
         <div class="stats">
-            Total Students Present Today: <span id="totalCount">0</span>
+            Total Students: <span id="totalCount">0</span>
         </div>
 
-        <table id="attendanceTable">
+        <table>
             <thead>
                 <tr>
                     <th>Roll No.</th>
-                    <th>Name</th>
-                    <th>Date & Time</th>
+                    <th>Student Name</th>
+                    <th>Date</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th class="action-column">Action</th>
                 </tr>
             </thead>
-            <tbody id="tableBody"
-                </tbody>
+            <tbody id="tableBody">
+            </tbody>
         </table>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
