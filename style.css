@@ -1,0 +1,13 @@
+body { font-family: 'poppins',sans-serif;background-color: #eef2f3; display: flex; justify-content: center; padding: 20px;}
+.container { max-width: 800PX; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+.header-section  {display: flex; justify-content: space-between; align-items: center;margin-bottom: 20px; }
+.input-section { margin-bottom: 20px; display: flex; gap: 10px; }
+input { flex: 1; padding: 10px; border: 1px solid #ddd; border: 5px; }
+button { padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; background: #28a745; color: white; }
+.login-btn { background: #dc3545; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+th { background-color: #f2f2f2; }
+.delete-btn { background: #ff4d4d; padding: 5PX 10PX; font-size: 12px; }
+
+.hidden { display: none !important;}
